@@ -141,11 +141,8 @@ line(N, Board, [A,B,C]):-
 
 utility(Board, Value):-
   findall([A,B,C], line(_, Board, [A,B,C]), Lines),
-  %lines(Board, Lines),
   writer(Lines, x, 0, Xtotal),
   writer(Lines, o, 0, Ototal),
-  write(Xtotal), nl,
-  write(Ototal), nl,
   Value is Xtotal - Ototal.
 
 writer([],_, Sum, Total):-
