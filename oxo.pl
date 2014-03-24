@@ -134,25 +134,6 @@ empty_square( X, Y, Board ) :-
 choose_move( _Player, X, Y, Board ) :-			% dumbly choose the
 	empty_square( X, Y, Board ).			% next space
 
-% inc(A, B) :-
-%   B is A + 1.
-%
-% util_helper_two( N, Board, Player, Count) :-
-%   row( N, Board, row( N, Player, Player, _),
-% util_helper_two( N, Board, Player, Count) :-
-%   row( N, Board, row( N, Player, _, Player),
-% util_helper_two( N, Board, Player, Count) :-
-%   row( N, Board, row( N, _, Player, Player),
-%
-% utility( Board, Player ) :-
-%   util_helper_two(1, Board, Player).
-% utility( Board, Player ) :-
-%   util_helper_two(2, Board, Player).
-% utility( Board, Player ) :-
-%   util_helper_two(3, Board, Player).
-%
-
-
 line(N, Board, [A,B,C]):-
   row(N, Board, row(N, A,B,C));
   column(N, Board, col(N, A,B,C));
