@@ -120,17 +120,70 @@ play( Player, Board ) :-
 	play( NextPlayer, NewBoard ),
 	!.
 
-% predicate to test for an empty square. (Remember that with uninstantiated X and Y, Prolog 
+% predicate to test for an empty square. (Remember that with uninstantiated X and Y, Prolog
 %	will try to find an empty square.)
 
 empty_square( X, Y, Board ) :-
 	is_empty( Empty ),
 	square( X, Y, Board, squ( X, Y, Empty )).
 
-% predicate to choose a move. As supplied, it plays in a very stupid way indeed. You will 
+% predicate to choose a move. As supplied, it plays in a very stupid way indeed. You will
 %	have to try hard to lose against this.
 % THIS PREDICATE IS THE ONE YOU HAVE TO REPLACE FOR YOUR PRACTICAL
 
 choose_move( _Player, X, Y, Board ) :-			% dumbly choose the
 	empty_square( X, Y, Board ).			% next space
 
+% inc(A, B) :-
+%   B is A + 1.
+%
+% util_helper_two( N, Board, Player, Count) :-
+%   row( N, Board, row( N, Player, Player, _),
+% util_helper_two( N, Board, Player, Count) :-
+%   row( N, Board, row( N, Player, _, Player),
+% util_helper_two( N, Board, Player, Count) :-
+%   row( N, Board, row( N, _, Player, Player),
+%
+% utility( Board, Player ) :-
+%   util_helper_two(1, Board, Player).
+% utility( Board, Player ) :-
+%   util_helper_two(2, Board, Player).
+% utility( Board, Player ) :-
+%   util_helper_two(3, Board, Player).
+%
+
+
+line(N, Board, [A,B,C]):-
+  row(N, Board, row(N, A,B,C));
+  column(N, Board, col(N, A,B,C));
+  diagonal(N, Board, dia(N, A,B,C)).
+
+utility(Board, Value):-
+  findall([A,B,C], line(_, Board, [A,B,C]), Lines),
+  %lines(Board, Lines),
+  writer(Lines, x, 0, Xtotal),
+  writer(Lines, o, 0, Ototal),
+  write(Xtotal), nl,
+  write(Ototal), nl,
+  Value is Xtotal - Ototal.
+
+writer([],_, Sum, Total):-
+  Total is Sum.
+writer([Head|Tail],X, Sum, Total):-
+  count(Head, X, Out),
+  sum(Out, Result),
+  NewSum is Sum + Result,
+  writer(Tail,X, NewSum, Total).
+
+sum(0, Result):-
+  Result is 0.
+sum(1, Result):-
+  Result is 0.
+sum(2,Result):-
+  Result is 1.
+sum(3,Result):-
+  Result is 10.
+
+count([],_,0).
+count([X|T],X,Y):- count(T,X,Z), Y is 1+Z.
+count([X1|T],X,Z):- X1\=X,count(T,X,Z).
