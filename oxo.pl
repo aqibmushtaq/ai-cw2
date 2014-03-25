@@ -165,3 +165,28 @@ sum(3,Result):-
 count([],_,0).
 count([X|T],X,Y):- count(T,X,Z), Y is 1+Z.
 count([X1|T],X,Z):- X1\=X,count(T,X,Z).
+
+% Get the positions at which the element occurs in the list
+indexOf([Element|_], Element, 1). % We found the element
+indexOf([_|Tail], Element, Index):-
+    indexOf(Tail, Element, Index1), % Check in the tail of the list
+    Index is Index1+1.  % and increment the resulting index
+
+% Get the positions where the row contains empty squares
+get_empty_spaces([A,B,C], [X,Y,Z]):-
+    findall(X, indexOf(A, '', X), X),
+    findall(Y, indexOf(B, '', Y), Y),
+    findall(Z, indexOf(C, '', Z), Z).
+
+% Create the board using various X-values 
+make_boards(InitBoard, [], Y, []).  % Base case
+make_boards(InitBoard, [X1|T], Y, [FinalBoard|FinalBoards]):-
+    make_boards(InitBoard, T, Y, FinalBoards),  % Create the next board
+	fill_square( X1, Y, o, InitBoard, FinalBoard).  % Create this board and add it to the list
+
+% Get all combinations for the current move
+get_all_boards(Board, [A,B,C]):-
+    get_empty_spaces(Board, [X,Y,Z]),
+    make_boards(Board, X, 1, A),
+    make_boards(Board, Y, 2, B),
+    make_boards(Board, Z, 3, C).
