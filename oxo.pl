@@ -131,8 +131,8 @@ empty_square( X, Y, Board ) :-
 %	have to try hard to lose against this.
 % THIS PREDICATE IS THE ONE YOU HAVE TO REPLACE FOR YOUR PRACTICAL
 
-choose_move( _Player, X, Y, Board ) :-			% dumbly choose the
-	empty_square( X, Y, Board ).			% next space
+% choose_move( _Player, X, Y, Board ) :-			% dumbly choose the
+% 	empty_square( X, Y, Board ).			% next space
 
 line(N, Board, [A,B,C]):-
   row(N, Board, row(N, A,B,C));
@@ -174,19 +174,46 @@ indexOf([_|Tail], Element, Index):-
 
 % Get the positions where the row contains empty squares
 get_empty_spaces([A,B,C], [X,Y,Z]):-
-    findall(X, indexOf(A, '', X), X),
-    findall(Y, indexOf(B, '', Y), Y),
-    findall(Z, indexOf(C, '', Z), Z).
+    findall(X, indexOf(A, ' ', X), X),
+    findall(Y, indexOf(B, ' ', Y), Y),
+    findall(Z, indexOf(C, ' ', Z), Z).
 
 % Create the board using various X-values 
 make_boards(InitBoard, [], Y, []).  % Base case
-make_boards(InitBoard, [X1|T], Y, [FinalBoard|FinalBoards]):-
+make_boards(InitBoard, [X1|T], Y, [X1,Y,FinalBoard|FinalBoards]):-
     make_boards(InitBoard, T, Y, FinalBoards),  % Create the next board
 	fill_square( X1, Y, o, InitBoard, FinalBoard).  % Create this board and add it to the list
 
 % Get all combinations for the current move
-get_all_boards(Board, [A,B,C]):-
+get_all_boards(Board, Boards):-
     get_empty_spaces(Board, [X,Y,Z]),
     make_boards(Board, X, 1, A),
+    % write('BOARD A'),write(A),nl,nl,
     make_boards(Board, Y, 2, B),
-    make_boards(Board, Z, 3, C).
+    % write('BOARD B'),write(B),nl,nl,
+    make_boards(Board, Z, 3, C),
+    % write('BOARD C'),write(C),nl,nl,
+    append(A, B, BoardsAB),
+    append(BoardsAB, C, Boards).
+    % write('ALL BOARDS'),write(Boards),nl,nl.
+
+get_best_move([], _, _, -100).
+get_best_move([X,Y,Board|T], BestX, BestY, BestUtility):-
+    % write('GETTING BEST MOVE x:'),write(X),write(' y:'),write(Y),nl,nl,
+    get_best_move(T, BestX2, BestY2, BestUtility2),
+    % write('BELOW get_best_move... BestUtility2:'),write(BestUtility2),nl,nl,
+    utility(Board, Utility),
+    % write('UTILITY:'),write(Utility),nl,nl,
+    max([BestUtility2,BestX2,BestY2], [Utility,X,Y], [BestUtility,BestX,BestY]).
+    % write('GOT MAX:'),write(BestUtility),nl,nl,
+    % write(BestUtility),nl,write(BestX),nl,write(BestY),nl,nl.
+
+choose_move( _Player, X, Y, Board ) :-
+    % write('Player:'),write(_Player),nl,write('Board:'),write(Board),nl,nl,
+    get_all_boards(Board, NewBoards),
+    % write('GOT ALL BOARDS'),nl,nl,write(NewBoards),nl,nl,
+    get_best_move(NewBoards, X, Y, BestUtility).
+    % write(BestUtility).
+
+max([A,AX,AY], [B,BX,BY], [A,AX,AY]) :- A >= B.
+max([A,AX,AY], [B,BX,BY], [B,BX,BY]) :- B > A.
